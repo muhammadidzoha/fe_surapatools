@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
+import { AuroraBackground } from "../components/ui/aurora-background";
 
 export function BankSuit({ onClick, setIsOpen }) {
   const [showModal, setShowModal] = useState(false);
@@ -89,6 +90,33 @@ export function BankSuit({ onClick, setIsOpen }) {
       }
     }
 
+    if (
+      age === "Remaja" &&
+      salary === "KURANG_DARI_DUA_JUTA" &&
+      job === "Pelajar_Atau_Mahasiswa"
+    ) {
+      return [
+        {
+          name: "TRM",
+          title: "Tabungan Rencana Mandiri (TRM)",
+          description:
+            "Tabungan berjangka otomatis dengan setoran rutin, bunga kompetitif, dan asuransi jiwa gratis.",
+        },
+        {
+          name: "SiMuda",
+          title: "Tabungan SiMuda Mandiri",
+          description:
+            "Tabungan ringan & fleksibel khusus generasi muda usia 18–30 tahun, bebas biaya admin.",
+        },
+        {
+          name: "NOW",
+          title: "Tabungan NOW Mandiri",
+          description:
+            "Tabungan praktis untuk pelajar/mahasiswa, cocok untuk kebutuhan harian & pencairan beasiswa.",
+        },
+      ];
+    }
+
     return [];
   };
 
@@ -120,6 +148,7 @@ export function BankSuit({ onClick, setIsOpen }) {
       age: values.age,
       job: values.job,
       salary: values.salary,
+      phone: values.phone,
       goal: values.goal,
       questioners: formattedQuestioners,
     };
@@ -162,6 +191,7 @@ export function BankSuit({ onClick, setIsOpen }) {
       age: "",
       job: "",
       salary: "",
+      phone: "",
       goal: "",
       menabung: "",
       danaDarurat: "",
@@ -220,6 +250,78 @@ export function BankSuit({ onClick, setIsOpen }) {
 
   const getProductDetails = (productName) => {
     const details = {
+      TRM: {
+        title: "Tabungan Rencana Mandiri (TRM)",
+        content: `🎯 1. Kenali Dulu Produk Tabungan Rencana Mandiri
+Tabungan Rencana Mandiri adalah produk tabungan berjangka otomatis yang membantu nasabah menabung secara rutin dengan setoran bulanan tetap dan bunga kompetitif.
+
+Fitur Utama:
+- Setoran rutin: mulai dari Rp100.000/bulan
+- Jangka waktu: 1 hingga 20 tahun
+- Bunga menarik dan kompetitif
+- Proteksi asuransi jiwa gratis (hingga Rp5 miliar)
+
+💬 2. Script Dasar Penawaran (Soft Selling)
+Contoh 1 - Ke Nasabah di CS/FO:
+"Ibu/Bapak, apakah punya rencana menabung untuk kebutuhan mendatang seperti pendidikan anak, haji, atau liburan? Kami punya produk Tabungan Rencana Mandiri, di mana Ibu/Bapak bisa menabung rutin setiap bulan secara otomatis, dengan bunga kompetitif dan asuransi jiwa gratis. Sangat cocok untuk perencanaan masa depan."
+
+Contoh 2 - via WhatsApp atau Telepon:
+"Selamat siang, Bapak/Ibu. Perkenalkan, saya dari Bank Mandiri. Saat ini kami punya program Tabungan Rencana, yaitu tabungan otomatis bulanan yang membantu Bapak/Ibu mencapai tujuan keuangan, seperti dana pendidikan atau traveling. Apakah Bapak/Ibu tertarik bila kami bantu simulasikan tabungannya?"
+
+✅ 3. Highlight Keunggulan (Benefit-Oriented)
+- Aman: Dana tidak bisa ditarik sewaktu-waktu, cocok untuk disiplin menabung
+- Bunga lebih tinggi dari tabungan biasa
+- Asuransi jiwa gratis (otomatis, tidak perlu medical check-up)
+- Tujuan terencana: cocok untuk dana pendidikan, nikah, rumah, dll
+
+📊 4. Gunakan Simulasi Menarik
+"Kalau Ibu menabung Rp500.000 per bulan selama 5 tahun, dana yang terkumpul bisa mencapai lebih dari Rp30 juta, dan itu sudah termasuk bunga. Aman dan otomatis dipotong dari rekening, jadi tidak perlu repot."
+
+🧠 5. Sesuaikan dengan Profil Nasabah
+- Nasabah muda: arahkan ke rencana liburan, nikah, atau DP rumah
+- Orangtua: arahkan ke dana pendidikan anak
+- Karyawan tetap: bisa disarankan jangka panjang dengan nominal tetap
+- UMKM/pengusaha: arahkan untuk simpanan jangka pendek seperti renovasi, beli alat, dll
+
+🎁 6. Tambahkan Trigger Promosi (Jika Ada)
+"Kebetulan saat ini sedang ada program cashback/undian untuk pembukaan Tabungan Rencana lho, Bu."
+
+📝 7. Closing dengan Ajakan Simpel
+"Boleh saya bantu buatkan simulasinya sekarang? Kalau cocok, nanti kita bantu bukakan langsung, cukup dari rekening Mandiri yang Ibu miliki sekarang."
+`,
+      },
+      SiMuda: {
+        title: "Tabungan SiMuda Mandiri",
+        content: `📌 Deskripsi Singkat:
+Tabungan khusus untuk generasi muda usia 18–30 tahun, dengan fitur ringan dan fleksibel untuk membantu kebiasaan menabung sejak dini.
+
+⭐ Keunggulan Tabungan SiMuda:
+- Setoran awal ringan: Rp50.000 saja
+- Bebas biaya administrasi
+- Bisa ditautkan ke Livin’ by Mandiri
+- Fitur autodebit untuk menabung otomatis
+- Dapat digunakan untuk transaksi non-tunai dan belanja online
+
+💬 Contoh Script Penawaran:
+"Halo Kak, udah tahu belum kalau Bank Mandiri punya Tabungan SiMuda khusus buat usia 18–30 tahun? Setoran awalnya cuma Rp50.000, bebas biaya admin, dan bisa langsung dipakai buat transaksi online atau Livin’. Cocok banget buat mulai kebiasaan nabung dari sekarang. Mau aku bantu bukain, Kak?"
+`,
+      },
+      NOW: {
+        title: "Tabungan NOW Mandiri",
+        content: `📌 Deskripsi Singkat:
+Tabungan yang dirancang khusus untuk mahasiswa atau pelajar, praktis dan hemat, bisa digunakan untuk kebutuhan harian dan pencairan beasiswa.
+
+⭐ Keunggulan Tabungan NOW:
+- Setoran awal hanya Rp20.000
+- Bebas biaya administrasi
+- Bisa dipakai untuk terima pencairan beasiswa KIP-K
+- Bisa digunakan untuk transaksi QRIS, top up e-wallet, dan transfer antar bank
+- Dapat digunakan melalui Livin’ by Mandiri
+
+💬 Contoh Script Penawaran:
+"Kak, buat mahasiswa seperti Kakak, kita punya Tabungan NOW dari Bank Mandiri. Cukup setor Rp20.000 aja udah bisa punya rekening aktif tanpa biaya bulanan. Cocok banget buat nerima beasiswa atau transaksi harian. Bisa langsung daftar via Livin’ atau aku bantu buka di sini ya."
+`,
+      },
       KUR: {
         title: "How To Closing - KUR",
         content: `📌 Pertanyaan Umum untuk Menggali Kebutuhan
@@ -537,7 +639,7 @@ Kalau Bapak/Ibu tertarik, saya bisa hitungkan simulasi plafon & cicilan sesuai g
               <Input
                 id="name"
                 name="name"
-                placeholder="Andre Naibaho"
+                placeholder="Fill in your name"
                 type="text"
                 value={values.name}
                 onChange={handleChange}
@@ -599,6 +701,19 @@ Kalau Bapak/Ibu tertarik, saya bisa hitungkan simulasi plafon & cicilan sesuai g
               </Select>
             </LabelInputContainer>
           </div>
+
+          <LabelInputContainer className="mb-4">
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              placeholder="Fill in your phone number"
+              type="text"
+              value={values.phone}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </LabelInputContainer>
 
           <div className="my-2 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
@@ -799,8 +914,14 @@ Kalau Bapak/Ibu tertarik, saya bisa hitungkan simulasi plafon & cicilan sesuai g
 
       {/* Product Recommendation Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-black rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Aurora background di bawah modal */}
+          <div className="absolute inset-0 w-full h-full z-0">
+            <AuroraBackground />
+          </div>
+          {/* Overlay gelap agar modal tetap fokus */}
+          <div className="absolute inset-0 bg-black/80 z-10" />
+          <div className="relative z-20 bg-white dark:bg-black rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             {!selectedProduct ? (
               <>
                 <h2 className="text-xl font-bold mb-4 text-neutral-800 dark:text-neutral-200">

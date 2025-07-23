@@ -9,14 +9,14 @@ import { Select } from "../components/ui/Select";
 
 export function Register({ onClick, setIsRegis }) {
   const roleOptions = [
-    { label: "Pegawai", value: "d5e20403-0e22-498d-b7db-a0f890398377" },
+    { label: "CS/Teller/Sales", value: "7f831932-ad9e-4e44-b91d-0f4bfbff84bf" },
     {
       label: "Professional Sales",
-      value: "65257b87-8769-4515-b9c0-37f89c28cfbd",
+      value: "dfcb6dfb-05fa-4cf3-ab89-3ced8189455e",
     },
     {
       label: "Supporting Sales",
-      value: "2f4e442f-987c-49f8-877d-335ab45aafdd",
+      value: "ee7b06de-f17f-4be3-bac5-611d130afa47",
     },
   ];
 

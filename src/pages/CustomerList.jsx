@@ -1,6 +1,7 @@
 import Navbar from "../components/ui/Navbar";
 import useSWR from "swr";
 import axios from "axios";
+import { useState } from "react";
 
 const CustomerList = () => {
   const fetcher = async () => {
@@ -8,9 +9,30 @@ const CustomerList = () => {
     return response.data;
   };
 
-  const { data, error, isLoading } = useSWR("customers", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("customers", fetcher);
 
-  console.log(data);
+  const [editingStatus, setEditingStatus] = useState({
+    customerId: null,
+    stage: "",
+  });
+  const stageOptions = [
+    { label: "Follow Up 1", value: "Follow_Up_1" },
+    { label: "Follow Up 2", value: "Follow_Up_2" },
+    { label: "Offering", value: "Offering" },
+    { label: "Closed", value: "Closed" },
+  ];
+
+  const handleStatusClick = (customerId, currentStage) => {
+    setEditingStatus({ customerId, stage: currentStage });
+  };
+
+  const handleStatusChange = async (customerId, questionerId, newStage) => {
+    await axios.patch(`http://localhost:1234/api/customers/${questionerId}`, {
+      stage: newStage,
+    });
+    setEditingStatus({ customerId: null, stage: "" });
+    mutate("customers");
+  };
 
   const ageOptions = [
     { label: "17–25 tahun", value: "Remaja" },
@@ -63,35 +85,6 @@ const CustomerList = () => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
-              <div className="py-3 px-4">
-                <div className="relative max-w-xs">
-                  <label className="sr-only">Search</label>
-                  <input
-                    type="text"
-                    name="hs-table-with-pagination-search"
-                    id="hs-table-with-pagination-search"
-                    className="py-1.5 sm:py-2 px-3 ps-9 block w-full border-gray-200 shadow-2xs rounded-lg sm:text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                    placeholder="Search for items"
-                  />
-                  <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-                    <svg
-                      className="size-4 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <path d="m21 21-4.3-4.3"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
               <div className="overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -124,20 +117,32 @@ const CustomerList = () => {
                         rowSpan={2}
                         className="border-r border-gray-200 px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase"
                       >
+                        Phone
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className="border-r border-gray-200 px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase"
+                      >
                         Goal
                       </th>
                       <th
                         colSpan={2}
-                        className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
+                        className="border-r border-gray-200 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
                       >
                         Quesioner
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
+                      >
+                        Status
                       </th>
                     </tr>
                     <tr>
                       <th className="px-6 border-r border-gray-200 py-3 text-start text-xs font-medium text-gray-500 uppercase">
                         Question
                       </th>
-                      <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 border-r border-gray-200 text-start text-xs font-medium text-gray-500 uppercase">
                         Answer
                       </th>
                     </tr>
@@ -156,6 +161,9 @@ const CustomerList = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
                           {formatSalary(customer.salary)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
+                          {customer.phone || "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
                           {customer.goals.length > 0
@@ -193,12 +201,64 @@ const CustomerList = () => {
                             ))}
                           </div>
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-r border-gray-200">
+                          {customer.questioners &&
+                          customer.questioners.length > 0 &&
+                          customer.questioners[0]?.stage ? (
+                            editingStatus.customerId === customer.id ? (
+                              <select
+                                className="px-2 py-1 rounded border text-xs font-semibold uppercase tracking-wide"
+                                value={editingStatus.stage}
+                                onChange={(e) =>
+                                  handleStatusChange(
+                                    customer.id,
+                                    customer.questioners[0].id,
+                                    e.target.value
+                                  )
+                                }
+                                onBlur={() =>
+                                  setEditingStatus({
+                                    customerId: null,
+                                    stage: "",
+                                  })
+                                }
+                                autoFocus
+                              >
+                                {stageOptions.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span
+                                className="inline-block px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wide cursor-pointer hover:bg-blue-100"
+                                onClick={() =>
+                                  handleStatusClick(
+                                    customer.id,
+                                    customer.questioners[0].stage
+                                  )
+                                }
+                                tabIndex={0}
+                              >
+                                {customer.questioners[0].stage.replace(
+                                  /_/g,
+                                  " "
+                                )}
+                              </span>
+                            )
+                          ) : (
+                            <span className="text-gray-400 text-xs">
+                              No Status
+                            </span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <div className="py-1 px-4">
+              {/* <div className="py-1 px-4">
                 <nav
                   className="flex items-center space-x-1"
                   aria-label="Pagination"
@@ -239,7 +299,7 @@ const CustomerList = () => {
                     <span aria-hidden="true">»</span>
                   </button>
                 </nav>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

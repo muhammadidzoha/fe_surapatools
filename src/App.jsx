@@ -44,7 +44,7 @@ function App() {
       <Route
         path="/customers"
         element={
-          canAccessRoute(["pegawai", "professional sales"]) ? (
+          canAccessRoute(["cs/teller/sales", "professional sales"]) ? (
             <CustomerList />
           ) : (
             <Navigate to={getDefaultRedirect()} replace />

@@ -7,6 +7,7 @@ import { Register } from "../pages/Register";
 import Navbar from "../components/ui/Navbar";
 import { BankSuit } from "../pages/BankSuit";
 import { BankMove } from "../pages/BankMove";
+import { BankDock } from "../pages/BankDock";
 
 const HomeLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -15,6 +16,7 @@ const HomeLayout = () => {
   const [userRole, setUserRole] = React.useState(null);
   const [isOpenBankSuit, setIsOpenBankSuit] = React.useState(false);
   const [isOpenBankMove, setIsOpenBankMove] = React.useState(false);
+  const [isOpenBankDock, setIsOpenBankDock] = React.useState(false);
 
   React.useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -44,12 +46,18 @@ const HomeLayout = () => {
     setIsOpenBankMove(false);
   };
 
+  const closeBankDockModal = () => {
+    setIsOpenBankDock(false);
+  };
+
   const getButtonText = () => {
     switch (userRole) {
-      case "pegawai":
+      case "cs/teller/sales":
         return "Bank Suit";
       case "professional sales":
         return "Bank Move";
+      case "supporting sales":
+        return "Bank Dock";
       default:
         return "BankCash";
     }
@@ -57,11 +65,14 @@ const HomeLayout = () => {
 
   const handleMainButtonClick = () => {
     switch (userRole) {
-      case "pegawai":
+      case "cs/teller/sales":
         setIsOpenBankSuit(true);
         break;
       case "professional sales":
         setIsOpenBankMove(true);
+        break;
+      case "supporting sales":
+        setIsOpenBankDock(true);
         break;
       default:
         // Default action
@@ -222,6 +233,34 @@ const HomeLayout = () => {
               <BankMove
                 onClick={closeBankMoveModal}
                 setIsOpen={setIsOpenBankMove}
+              />
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+
+      {isLogin && isOpenBankDock && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute z-[100] top-0 left-0 size-full bg-white/10 text-white"
+        >
+          <div className="flex items-center justify-center h-full">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 50 }}
+              transition={{
+                duration: 0.4,
+                ease: "easeOut",
+                delay: 0.1,
+              }}
+            >
+              <BankDock
+                onClick={closeBankDockModal}
+                setIsOpen={setIsOpenBankDock}
               />
             </motion.div>
           </div>
